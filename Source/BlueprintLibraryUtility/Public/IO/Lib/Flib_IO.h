@@ -1,96 +1,15 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 #include "ProceduralMeshComponent.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "IO/Types/IOTypes.h"
 #include "Flib_IO.generated.h"
-//
-//UENUM(BlueprintType)
-//enum class EPathType : uint8
-//{
-//	Absolute,
-//	Relative
-//};
-//
-//
-//USTRUCT(BlueprintType)
-//struct FMeshInfo
-//{
-//	GENERATED_USTRUCT_BODY()
-//
-//	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ReturnedData")
-//		TArray<FVector> Vertices;
-//
-//	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ReturnedData")
-//		TArray<int32> Triangles;
-//
-//	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ReturnedData")
-//		TArray<FVector> Normals;
-//
-//	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ReturnedData")
-//		TArray<FVector2D> UV0;
-//
-//	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ReturnedData")
-//		TArray<FLinearColor> VertexColors;
-//
-//	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ReturnedData")
-//		TArray<FProcMeshTangent> Tangents;
-//
-//	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ReturnedData")
-//		FTransform RelativeTransform;
-//};
-//
-//USTRUCT(BlueprintType)
-//struct FReturnedData
-//{
-//	GENERATED_USTRUCT_BODY()
-//
-//	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ReturnedData")
-//		bool bSuccess;
-//
-//	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ReturnedData")
-//		int32 NumMeshes;
-//
-//
-//	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ReturnedData")
-//		TArray<FMeshInfo> meshData;
-//
-//
-//};
+
+class UTextureRenderTarget2D;
 
 
-USTRUCT(BlueprintType)
-struct FLoadConfig
-{
-	GENERATED_BODY()
-public:
-	//Ëü»á½«¶à¸öÐ¡Íø¸ñÆ´½ÓÎªÒ»¸ö´óµÄÍø¸ñ£¬¼õÉÙ»æÖÆµ÷ÓÃ´Ó¶ø½øÐÐÓÅ»¯¡£
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool OptimizeMeshes = true;
-	//ÑØ×Åy·½Ïò·­×ªÎÆÀí×ø±ê£¬ÕâÔÚäÖÈ¾quakeÄ£ÐÍÊ±ºòÊÇ±ØÐëµÄ
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool FlipUVsv;
-	//½«²»Í¬Í¼Ôª·ÅÖÃµ½²»Í¬µÄÄ£ÐÍÖÐÈ¥£¬Í¼Æ¬ÀàÐÍ¿ÉÄÜÊÇµã¡¢Ö±Ïß¡¢Èý½ÇÐÎµÈ
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool SortByPType;
-	//×Ô¶¯ºÏ²¢ÏàÍ¬µÄ¶¥µã 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool JoinIdenticalVertices = true;
-	//Èç¹ûÔ­Ê¼¶¥µãÃ»ÓÐ·¨ÏòÊý¾Ý£¬Assimp»áÎª¶¥µã²úÉú·¨ÏòÊý¾Ý
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool GenSmoothNormals = true;
-	//×Ô¶¯¼ÆËãÇÐÏßºÍ¸±·¨Ïß
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool CalcTangentSpace = true;
-	//×Ô¶¯½«ËÄ±ßÐÎÃæ×ª»»ÎªÈý½ÇÃæ
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool Triangulate = true;
-	//Ê¹ÓÃ×óÊÖ×ø±êÏµ,±ÈÈçDX; ¶ø3dmaxºÍOpenGLÊÇÓÒÊÖ×ø±êÏµ
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool MakeLeftHanded;
 
-};
 
 
 /**
@@ -102,11 +21,73 @@ class BLUEPRINTLIBRARYUTILITY_API UFlib_IO : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 	
 public:
-
-
+#pragma region mesh	
+	//load material data for ProceduralMesh create sections
 	UFUNCTION(BlueprintCallable, Category = "BlueprintLibraryUtility|IO")
 		static FLoadedMeshData LoadMeshData(FString filepath, FLoadConfig Config);
 
 	static FMatPropertyRetValue LoadMeshMaterialProperty(const FString& FilePath, EMatPropertyKeyType key, unsigned int matIdx, ETextureType type, int32 number);
+#pragma endregion mesh
+
+
+#pragma region texture	
+	/** Load Texture2D */
+	UFUNCTION(BlueprintPure, Category = "BlueprintLibraryUtility|IO", meta = (Keywords = "image png jpg jpeg bmp bitmap ico icon exr icns"))
+		static UTexture2D* LoadTexture2DFromFile(const FString& FilePath, bool& IsValid, int32& Width, int32& Height);
+
+	UFUNCTION(BlueprintCallable, Category = "BlueprintLibraryUtility|IO", meta = (Keywords = ""))
+		static bool ExportTextureRenderTarget2D2PNG(UTextureRenderTarget2D* TextureRenderTarget, const FString& FilePath);
+#pragma endregion texture
+
+
+
+
+#pragma region sound	
+	UFUNCTION(BlueprintCallable, Category = "BlueprintLibraryUtility|IO", meta = (Keywords = ""))
+		static class USoundWave* LoadWaveDataFromFile(const FString& FilePath);
+#pragma endregion sound
+
+
+
+#pragma region file
+	/** Read Or Write Custom Text */
+	UFUNCTION(BlueprintCallable, Category = "BlueprintLibraryUtility|IO", meta = (Keywords = ""))
+		static bool ReadFile(const FString FilePath, FString& ReturnString);
+
+	UFUNCTION(BlueprintCallable, Category = "BlueprintLibraryUtility|IO", meta = (Keywords = ""))
+		static bool WriteFile(const FString FilePath, const FString& FileString);
+
+	UFUNCTION(BlueprintCallable, Category = "BlueprintLibraryUtility|IO", meta = (Keywords = ""))
+		static bool DeleteFile(const FString FilePath);
+
+	UFUNCTION(BlueprintCallable, Category = "BlueprintLibraryUtility|IO", meta = (Keywords = ""))
+		static bool DeleteFiles(const FString FilePath);
+
+	UFUNCTION(BlueprintCallable, Category = "BlueprintLibraryUtility|IO", meta = (Keywords = ""))
+		static bool CopyFile(const FString FilePath, const FString ToPath);
+
+	UFUNCTION(BlueprintCallable, Category = "BlueprintLibraryUtility|IO", meta = (Keywords = ""))
+		static	TArray<FString> OpenWindowsFilesDialog(const FString& Path, const FString& fileName, const FString& SufStr);
+
+	UFUNCTION(BlueprintCallable, Category = "BlueprintLibraryUtility|IO", meta = (Keywords = ""))
+		static FString OpenWindowsDirectory(const FString& Path);
+
+	UFUNCTION(BlueprintCallable, Category = "BlueprintLibraryUtility|IO", meta = (Keywords = ""))
+		static void OpenWindowsFolder(const FString& AbsolutePath);
+
+
+#pragma endregion file
+
+
+#pragma region exe	
+	UFUNCTION(BlueprintCallable, Category = "BlueprintLibraryUtility|IO", meta = (Keywords = "exe"))
+		static void OpenExe(const FString Path, const FString Args);
+#pragma endregion exe
+
+
+#pragma region message	
+	UFUNCTION(BlueprintCallable, Category = "BlueprintLibraryUtility|IO", meta = (Keywords = "msg"))
+		static EMsgRetType OpenMessageWindow(EMsgType Type, FText Msg);
+#pragma endregion message
 
 };

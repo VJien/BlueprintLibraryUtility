@@ -40,10 +40,7 @@ public class BlueprintLibraryUtility : ModuleRules
 			{
 				"Core",
                 "CoreUObject",
-                "Engine",
-                "RHI",
-                "RenderCore",
-                "ProceduralMeshComponent"
+                
                 // ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -54,6 +51,12 @@ public class BlueprintLibraryUtility : ModuleRules
 			{
 				"Slate",
 				"SlateCore",
+				"ImageWrapper",
+                "Engine",
+                "RHI",
+                "RenderCore",
+                "ProceduralMeshComponent",
+				"UMG",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

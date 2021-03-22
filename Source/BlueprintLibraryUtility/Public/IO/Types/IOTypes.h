@@ -8,7 +8,32 @@
 #include "assimp/scene.h"
 #include "IOTypes.generated.h"
 
+UENUM(BlueprintType)
+enum class EMsgType : uint8
+{
+	Ok,
+	YesNo,
+	OkCancel,
+	YesNoCancel,
+	CancelRetryContinue,
+	YesNoYesAllNoAll,
+	YesNoYesAllNoAllCancel,
+	YesNoYesAll,
 
+};
+UENUM(BlueprintType)
+enum class EMsgRetType : uint8
+{
+	No,
+	Yes,
+	YesAll,
+	NoAll,
+	Cancel,
+	Ok,
+	Retry,
+	Continue,
+
+};
 
 
 //return value type
@@ -220,6 +245,37 @@ public:
 
 
 
+USTRUCT(BlueprintType)
+struct FLoadConfig
+{
+	GENERATED_BODY()
+public:
+	//它会将多个小网格拼接为一个大的网格，减少绘制调用从而进行优化。
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool OptimizeMeshes = true;
+	//沿着y方向翻转纹理坐标，这在渲染quake模型时候是必须的
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool FlipUVsv;
+	//将不同图元放置到不同的模型中去，图片类型可能是点、直线、三角形等
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool SortByPType;
+	//自动合并相同的顶点 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool JoinIdenticalVertices = true;
+	//如果原始顶点没有法向数据，Assimp会为顶点产生法向数据
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool GenSmoothNormals = true;
+	//自动计算切线和副法线
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool CalcTangentSpace = true;
+	//自动将四边形面转换为三角面
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool Triangulate = true;
+	//使用左手坐标系,比如DX; 而3dmax和OpenGL是右手坐标系
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool MakeLeftHanded;
+
+};
 
 
 

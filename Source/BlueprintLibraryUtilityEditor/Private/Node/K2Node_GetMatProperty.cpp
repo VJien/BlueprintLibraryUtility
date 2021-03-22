@@ -5,6 +5,7 @@
 #include "Kismet/KismetStringLibrary.h"
 #include "IO/Types/IOTypes.h"
 #include "IO/Lib/Flib_IO.h"
+#include "Utility/Flib_Utilities.h"
 
 
 
@@ -115,32 +116,11 @@ EReturnType GetReturnTypeByKeyType(EMatPropertyKeyType key)
 
 FString TypeToString(EReturnType type)
 {
-	const UEnum* ep = FindObject<UEnum>(ANY_PACKAGE, TEXT("EReturnType"), true);
-	if (ep)
-	{
-		FString tempStr = ep->GetNameByValue((int)type).ToString();
-		TArray<FString> arr = UKismetStringLibrary::ParseIntoArray(tempStr, TEXT("::"));
-		if (arr.Num() > 0)
-		{
-			return arr.Last();
-		}
-	}
 
-	return TEXT("NONE");
-
+	return BLU::EnumToString<EReturnType>(TEXT("EReturnType"), type, true);
 }
 
 
-template<typename TEnum>
-static TEnum StringToEnum(const FString& EnumName, FString EnumValue)
-{
-	const UEnum* ep = FindObject<UEnum>(ANY_PACKAGE, *EnumName, 1);
-	if (!ep)
-	{
-		return TEnum(0);
-	}
-	return (TEnum)ep->GetIndexByName(FName(*FString(EnumValue)));
-}
 
 
 
@@ -270,7 +250,7 @@ void UK2Node_GetMatProperty::AllocateDefaultPins()
 	{
 		keyPin->DefaultValue = KeyEnum->GetNameStringByValue(static_cast<int>(KeyEnum->GetValueByNameString(CurrentKeyName)));
 		typePin->DefaultValue = TypeEnum->GetNameStringByValue(static_cast<int>(KeyEnum->GetValueByNameString(CurrentTextureTypeName)));
-		EMatPropertyKeyType keyType = StringToEnum<EMatPropertyKeyType>(TEXT("EMatPropertyKeyType"), CurrentKeyName);
+		EMatPropertyKeyType keyType = BLU::StringToEnum<EMatPropertyKeyType>(TEXT("EMatPropertyKeyType"), CurrentKeyName);
 		EReturnType type =  GetReturnTypeByKeyType(keyType);
 		RefreshExtraPin(keyType);
 		RefreshReturnPin(type);
@@ -313,7 +293,7 @@ void UK2Node_GetMatProperty::OnTypePinChanged()
 		int64 keyValue = MethodEnum->GetValueByNameString(keyValueHasDoubleColon);
 		//未变化
 		if (CurrentKeyName.Equals(keyValueString.ToLower())) return;
-		EMatPropertyKeyType keyType = StringToEnum<EMatPropertyKeyType>(TEXT("EMatPropertyKeyType"), keyValueString);
+		EMatPropertyKeyType keyType = BLU::StringToEnum<EMatPropertyKeyType>(TEXT("EMatPropertyKeyType"), keyValueString);
 		RefreshExtraPin(keyType);
 		RefreshReturnPin(GetReturnTypeByKeyType(keyType));
 		CurrentKeyName = keyValueString.ToLower();
@@ -337,7 +317,7 @@ void UK2Node_GetMatProperty::OnTextureTypePinChanged()
 		FString keyValueHasDoubleColon = FString::Printf(TEXT("%s::%s"), *MethodEnum->GetName(), *keyValueString);
 		int64 keyValue = MethodEnum->GetValueByNameString(keyValueHasDoubleColon);
 		if (CurrentTextureTypeName.Equals(keyValueString.ToLower())) return;
-		ETextureType keyType = StringToEnum<ETextureType>(TEXT("ETextureType"), keyValueString);
+		ETextureType keyType = BLU::StringToEnum<ETextureType>(TEXT("ETextureType"), keyValueString);
 		CurrentKeyName = keyValueString.ToLower();
 		FBlueprintEditorUtils::MarkBlueprintAsModified(GetBlueprint());
 

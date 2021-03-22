@@ -1,204 +1,26 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 #include "IO/Lib/Flib_IO.h"
 #include <assimp/Importer.hpp>  // C++ importer interface
 #include <assimp/scene.h>       // Output data structure
 #include <assimp/postprocess.h> // Post processing flags
-
-//void FindMeshInfo(const aiScene* scene, aiNode* node, FReturnedData& result)
-//{
-//
-//	for (uint32 i = 0; i < node->mNumMeshes; i++)
-//	{
-//		std::string TestString = node->mName.C_Str();
-//		FString Fs = FString(TestString.c_str());
-//		UE_LOG(LogTemp, Warning, TEXT("FindMeshInfo. %s\n"), *Fs);
-//		int meshidx = *node->mMeshes;
-//		aiMesh *mesh = scene->mMeshes[meshidx];
-//		FMeshInfo &mi = result.meshData[meshidx];
-//
-//		//transform.
-//		aiMatrix4x4 tempTrans = node->mTransformation;
-//		FMatrix tempMatrix;
-//		tempMatrix.M[0][0] = tempTrans.a1; tempMatrix.M[0][1] = tempTrans.b1; tempMatrix.M[0][2] = tempTrans.c1; tempMatrix.M[0][3] = tempTrans.d1;
-//		tempMatrix.M[1][0] = tempTrans.a2; tempMatrix.M[1][1] = tempTrans.b2; tempMatrix.M[1][2] = tempTrans.c2; tempMatrix.M[1][3] = tempTrans.d2;
-//		tempMatrix.M[2][0] = tempTrans.a3; tempMatrix.M[2][1] = tempTrans.b3; tempMatrix.M[2][2] = tempTrans.c3; tempMatrix.M[2][3] = tempTrans.d3;
-//		tempMatrix.M[3][0] = tempTrans.a4; tempMatrix.M[3][1] = tempTrans.b4; tempMatrix.M[3][2] = tempTrans.c4; tempMatrix.M[3][3] = tempTrans.d4;
-//		mi.RelativeTransform = FTransform(tempMatrix);
-//
-//		//vet
-//		for (uint32 j = 0; j < mesh->mNumVertices; ++j)
-//		{
-//			FVector vertex = FVector(
-//				mesh->mVertices[j].x,
-//				mesh->mVertices[j].y,
-//				mesh->mVertices[j].z);
-//
-//			vertex = mi.RelativeTransform.TransformFVector4(vertex);
-//			mi.Vertices.Push(vertex);
-//
-//			//Normal
-//			if (mesh->HasNormals())
-//			{
-//				FVector normal = FVector(
-//					mesh->mNormals[j].x,
-//					mesh->mNormals[j].y,
-//					mesh->mNormals[j].z);
-//
-//				//normal = mi.RelativeTransform.TransformFVector4(normal);
-//				mi.Normals.Push(normal);
-//			}
-//			else
-//			{
-//				mi.Normals.Push(FVector::ZeroVector);
-//			}
-//
-//			//UV Coordinates - inconsistent coordinates
-//			if (mesh->HasTextureCoords(0))
-//			{
-//				FVector2D uv = FVector2D(mesh->mTextureCoords[0][j].x, -mesh->mTextureCoords[0][j].y);
-//				mi.UV0.Add(uv);
-//			}
-//
-//			//Tangent
-//			if (mesh->HasTangentsAndBitangents())
-//			{
-//				FProcMeshTangent meshTangent = FProcMeshTangent(
-//					mesh->mTangents[j].x,
-//					mesh->mTangents[j].y,
-//					mesh->mTangents[j].z
-//				);
-//				mi.Tangents.Push(meshTangent);
-//			}
-//
-//			//Vertex color
-//			if (mesh->HasVertexColors(0))
-//			{
-//				FLinearColor color = FLinearColor(
-//					mesh->mColors[0][j].r,
-//					mesh->mColors[0][j].g,
-//					mesh->mColors[0][j].b,
-//					mesh->mColors[0][j].a
-//				);
-//				mi.VertexColors.Push(color);
-//			}
-//
-//		}
-//	}
-//}
-//
-//
-//void FindMesh(const aiScene* scene, aiNode* node, FReturnedData& retdata)
-//{
-//	FindMeshInfo(scene, node, retdata);
-//
-//	for (uint32 m = 0; m < node->mNumChildren; ++m)
-//	{
-//		FindMesh(scene, node->mChildren[m], retdata);
-//	}
-//}
-//
-//
-//
-//FReturnedData UFlib_IO::LoadMesh(FString filepath, EPathType type)
-//{
-//	FReturnedData result;
-//	result.bSuccess = false;
-//	result.meshData.Empty();
-//	result.NumMeshes = 0;
-//	//bEnableCollision:: StaticMeshSection
-//	//result.meshData.Vertices.Empty();
-//	//result.meshData.Triangles.Empty();
-//	//result.meshData.Normals.Empty();
-//	//result.meshData.UV0.Empty();
-//	//result.meshData.VertexColors.Empty();
-//	//result.meshData.Tangents.Empty();
-//
-//	if (filepath.IsEmpty())
-//	{
-//		UE_LOG(LogTemp, Warning, TEXT("Runtime Mesh Loader: filepath is empty.\n"));
-//		return result;
-//	}
-//
-//	std::string file;
-//	switch (type)
-//	{
-//	case EPathType::Absolute:
-//		file = TCHAR_TO_UTF8(*filepath);
-//		break;
-//	case EPathType::Relative:
-//		file = TCHAR_TO_UTF8(*FPaths::Combine(FPaths::ProjectContentDir(), filepath));
-//		break;
-//	}
-//
-//	Assimp::Importer mImporter;
-//
-//	const aiScene* mScenePtr = mImporter.ReadFile(file, aiProcess_Triangulate | aiProcess_MakeLeftHanded | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_OptimizeMeshes);
-//
-//	if (mScenePtr == nullptr)
-//	{
-//		UE_LOG(LogTemp, Warning, TEXT("Runtime Mesh Loader: Read mesh file failure.\n"));
-//		return result;
-//	}
-//
-//	if (mScenePtr->HasMeshes())
-//	{
-//		result.meshData.SetNum(mScenePtr->mNumMeshes, false);
-//
-//		FindMesh(mScenePtr, mScenePtr->mRootNode, result);
-//
-//		for (uint32 i = 0; i < mScenePtr->mNumMeshes; ++i)
-//		{
-//			//Triangle number
-//			for (uint32 l = 0; l < mScenePtr->mMeshes[i]->mNumFaces; ++l)
-//			{
-//				for (uint32 m = 0; m < mScenePtr->mMeshes[i]->mFaces[l].mNumIndices; ++m)
-//				{
-//					result.meshData[i].Triangles.Push(mScenePtr->mMeshes[i]->mFaces[l].mIndices[m]);
-//				}
-//			}
-//		}
-//
-//		result.bSuccess = true;
-//	}
-//
-//	return result;
-//}
-//
+#include "IImageWrapper.h"
+#include "Engine/Texture2D.h"
+#include "IImageWrapperModule.h"
+#include "Modules/ModuleManager.h"
+#include "Sound/SoundWave.h"
+#include "Misc/FileHelper.h"
+#include "TextureResource.h"
+#include "Engine/TextureRenderTarget2D.h"
+#include "ImageUtils.h"
+#include "UObject/NoExportTypes.h"
+#include "Engine/World.h"
+#include "Windows/WindowsPlatformProcess.h"
+#include "DesktopPlatform/Public/DesktopPlatformModule.h"
+#include "DesktopPlatform/Public/IDesktopPlatform.h"
+#include "Misc/MessageDialog.h"
 
 
-template<typename TEnum>
-static FString EnumToString(const FString& EnumName, TEnum Enum, bool bShortName)
-{
-	const UEnum* ep = FindObject<UEnum>(ANY_PACKAGE, *EnumName, true);
-	if (ep)
-	{
-		if (bShortName)
-		{
-			FString tempStr = ep->GetNameByValue((int)Enum).ToString();
-			TArray<FString> arr = UKismetStringLibrary::ParseIntoArray(tempStr, TEXT("::"));
-			if (arr.Num() > 0)
-			{
-				return arr.Last();
-			}
-		}
 
-		return ep->GetNameByValue((int)Enum).ToString();
-
-
-	}
-	return TEXT("");
-}
-
-template<typename TEnum>
-static TEnum StringToEnum(const FString& EnumName, FString EnumValue)
-{
-	const UEnum* ep = FindObject<UEnum>(ANY_PACKAGE, *EnumName, 1);
-	if (!ep)
-	{
-		return TEnum(0);
-	}
-	return (TEnum)ep->GetIndexByName(FName(*FString(EnumValue)));
-}
 
 
 void FindMeshData(const aiScene* scene, aiNode* node, FLoadedMeshData& outLoadedMeshData)
@@ -604,4 +426,315 @@ FMatPropertyRetValue UFlib_IO::LoadMeshMaterialProperty(const FString& FilePath,
 
 
 	return out;
+}
+//Discern Texture Type
+static TSharedPtr<IImageWrapper> GetImageWrapperByExtention(const FString InImagePath)
+{
+	IImageWrapperModule& ImageWrapperModule = FModuleManager::GetModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
+
+
+
+	if (InImagePath.EndsWith(".png"))
+	{
+		return ImageWrapperModule.CreateImageWrapper(EImageFormat::PNG);
+	}
+	else if (InImagePath.EndsWith(".jpg") || InImagePath.EndsWith(".jpeg"))
+	{
+		return ImageWrapperModule.CreateImageWrapper(EImageFormat::JPEG);
+	}
+	else if (InImagePath.EndsWith(".bmp"))
+	{
+		return ImageWrapperModule.CreateImageWrapper(EImageFormat::BMP);
+	}
+	else if (InImagePath.EndsWith(".ico"))
+	{
+		return ImageWrapperModule.CreateImageWrapper(EImageFormat::ICO);
+	}
+	else if (InImagePath.EndsWith(".exr"))
+	{
+		return ImageWrapperModule.CreateImageWrapper(EImageFormat::EXR);
+	}
+	else if (InImagePath.EndsWith(".icns"))
+	{
+		return ImageWrapperModule.CreateImageWrapper(EImageFormat::ICNS);
+	}
+	return nullptr;
+}
+UTexture2D* UFlib_IO::LoadTexture2DFromFile(const FString& FilePath, bool& IsValid, int32& Width, int32& Height)
+{
+
+	IsValid = false;
+	UTexture2D* LoadedT2D = NULL;
+
+
+	TSharedPtr<IImageWrapper> ImageWrapper = GetImageWrapperByExtention(FilePath);
+
+	TArray<uint8> RawFileData;
+	if (!FFileHelper::LoadFileToArray(RawFileData, *FilePath, 0)) return NULL;
+
+	if (ImageWrapper.IsValid() && ImageWrapper->SetCompressed(RawFileData.GetData(), RawFileData.Num()))
+	{
+		TArray<uint8> UncompressedBGRA;
+		if (ImageWrapper->GetRaw(ERGBFormat::BGRA, 8, UncompressedBGRA))
+		{
+
+			LoadedT2D = UTexture2D::CreateTransient(ImageWrapper->GetWidth(), ImageWrapper->GetHeight(), PF_B8G8R8A8);
+
+			if (!LoadedT2D) return NULL;
+
+			Width = ImageWrapper->GetWidth();
+			Height = ImageWrapper->GetHeight();
+
+			void* TextureData = LoadedT2D->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
+			FMemory::Memcpy(TextureData, UncompressedBGRA.GetData(), UncompressedBGRA.Num());
+			LoadedT2D->PlatformData->Mips[0].BulkData.Unlock();
+
+			LoadedT2D->UpdateResource();
+		}
+	}
+
+	IsValid = true;
+	return LoadedT2D;
+}
+
+bool UFlib_IO::ExportTextureRenderTarget2D2PNG(UTextureRenderTarget2D* TextureRenderTarget, const FString& FilePath)
+{
+
+	FTextureRenderTargetResource* rtResource = TextureRenderTarget->GameThread_GetRenderTargetResource();
+	FReadSurfaceDataFlags readPixelFlags(RCM_UNorm);
+
+	TArray<FColor> outBMP;
+
+	for (FColor& color : outBMP)
+	{
+		color.A = 255;
+	}
+	outBMP.AddUninitialized(TextureRenderTarget->GetSurfaceWidth() * TextureRenderTarget->GetSurfaceHeight());
+	rtResource->ReadPixels(outBMP, readPixelFlags);
+
+	FIntPoint destSize(TextureRenderTarget->GetSurfaceWidth(), TextureRenderTarget->GetSurfaceHeight());
+	TArray<uint8> CompressedBitmap;
+	FImageUtils::CompressImageArray(destSize.X, destSize.Y, outBMP, CompressedBitmap);
+	bool imageSavedOk = FFileHelper::SaveArrayToFile(CompressedBitmap, *FilePath);
+
+	return imageSavedOk;
+}
+
+class USoundWave* UFlib_IO::LoadWaveDataFromFile(const FString& FilePath)
+{
+	USoundWave* sw = NewObject<USoundWave>(USoundWave::StaticClass());
+
+	if (!sw)
+		return nullptr;
+
+
+	TArray < uint8 > rawFile;
+
+	FFileHelper::LoadFileToArray(rawFile, FilePath.GetCharArray().GetData());
+	FWaveModInfo WaveInfo;
+
+	if (WaveInfo.ReadWaveInfo(rawFile.GetData(), rawFile.Num()))
+	{
+		sw->InvalidateCompressedData();
+
+		sw->RawData.Lock(LOCK_READ_WRITE);
+		void* LockedData = sw->RawData.Realloc(rawFile.Num());
+		FMemory::Memcpy(LockedData, rawFile.GetData(), rawFile.Num());
+		sw->RawData.Unlock();
+
+		int32 DurationDiv = *WaveInfo.pChannels * *WaveInfo.pBitsPerSample * *WaveInfo.pSamplesPerSec;
+		if (DurationDiv)
+		{
+			sw->Duration = *WaveInfo.pWaveDataSize * 8.0f / DurationDiv;
+		}
+		else
+		{
+			sw->Duration = 0.0f;
+		}
+
+		sw->SetSampleRate(*WaveInfo.pSamplesPerSec);
+		sw->NumChannels = *WaveInfo.pChannels;
+		sw->RawPCMDataSize = WaveInfo.SampleDataSize;
+		sw->SoundGroup = ESoundGroup::SOUNDGROUP_Default;
+	}
+	else {
+		return nullptr;
+	}
+
+	return sw;
+}
+
+bool UFlib_IO::ReadFile(const FString FilePath, FString& ReturnString)
+{
+	FString Cache = "";
+	bool Sucess = false;
+	Sucess = FFileHelper::LoadFileToString(Cache, FilePath.GetCharArray().GetData());
+	ReturnString = Cache;
+	return Sucess;
+}
+
+bool UFlib_IO::WriteFile(const FString FilePath, const FString& FileString)
+{
+	if (FilePath.IsEmpty())
+	{
+		return false;
+	}
+	bool Sucess;
+	Sucess = FFileHelper::SaveStringToFile(FileString, *FilePath);
+	return Sucess;
+}
+
+bool UFlib_IO::DeleteFile(const FString FilePath)
+{
+	if (FilePath.IsEmpty())
+	{
+		return false;
+	}
+	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+
+
+
+	if (PlatformFile.DeleteFile(*FilePath))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("deleteFile: Delete the flie successfully!"));
+
+		return true;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("deleteFile: Not delete the flie!"));
+
+		return false;
+	}
+}
+
+bool UFlib_IO::DeleteFiles(const FString FilePath)
+{
+	if (FilePath.IsEmpty())
+	{
+		return false;
+	}
+
+	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+
+
+
+	if (PlatformFile.DeleteDirectoryRecursively(*FilePath))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("deleteFile: Delete the flie successfully!"));
+
+		return true;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("deleteFile: Not delete the flie!"));
+
+		return false;
+	}
+}
+
+bool UFlib_IO::CopyFile(const FString FilePath, const FString ToPath)
+{
+	if (FilePath.IsEmpty() || ToPath.IsEmpty())
+	{
+		return false;
+	}
+	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+	return PlatformFile.CopyFile(*ToPath, *FilePath);
+}
+
+TArray<FString> UFlib_IO::OpenWindowsFilesDialog(const FString& Path, const FString& fileName, const FString& SufStr)
+{
+
+	TArray<FString> OpenFileNames;//获取的文件绝对路径
+
+	FString ExtensionStr = SufStr.IsEmpty() ? TEXT("*.*") : SufStr;//文件类型
+	IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
+	DesktopPlatform->OpenFileDialog(nullptr, TEXT("打开文件"), Path, fileName, *SufStr, EFileDialogFlags::None, OpenFileNames);
+	return OpenFileNames;
+}
+
+void UFlib_IO::OpenExe(const FString Path, const FString Args)
+{
+
+	FWindowsPlatformProcess::CreateProc(*Path, *Args, true, false, false, nullptr, 0, nullptr, nullptr);
+
+	
+}
+
+EMsgRetType UFlib_IO::OpenMessageWindow(EMsgType Type, FText Msg)
+{
+
+	EAppMsgType::Type  tp = EAppMsgType::Ok;
+	switch (Type)
+	{
+	case EMsgType::Ok:
+		tp = EAppMsgType::Ok;
+		break;
+	case EMsgType::YesNo:
+		tp = EAppMsgType::YesNo;
+		break;
+	case EMsgType::OkCancel:
+		tp = EAppMsgType::OkCancel;
+		break;
+	case EMsgType::YesNoCancel:
+		tp = EAppMsgType::YesNoCancel;
+		break;
+	case EMsgType::CancelRetryContinue:
+		tp = EAppMsgType::CancelRetryContinue;
+		break;
+	case EMsgType::YesNoYesAllNoAll:
+		tp = EAppMsgType::YesNoYesAllNoAll;
+		break;
+	case EMsgType::YesNoYesAllNoAllCancel:
+		tp = EAppMsgType::YesNoYesAllNoAllCancel;
+		break;
+	case EMsgType::YesNoYesAll:
+		tp = EAppMsgType::YesNoYesAll;
+		break;
+	}
+	EAppReturnType::Type retType = FMessageDialog::Open(tp, Msg);
+	EMsgRetType returnType = EMsgRetType::Ok;
+
+	switch (retType)
+	{
+	case EAppReturnType::No:
+		returnType = EMsgRetType::No;
+		break;
+	case EAppReturnType::Yes:
+		returnType = EMsgRetType::Yes;
+		break;
+	case EAppReturnType::YesAll:
+		returnType = EMsgRetType::YesAll;
+		break;
+	case EAppReturnType::NoAll:
+		returnType = EMsgRetType::NoAll;
+		break;
+	case EAppReturnType::Cancel:
+		returnType = EMsgRetType::Cancel;
+		break;
+	case EAppReturnType::Ok:
+		returnType = EMsgRetType::Ok;
+		break;
+	case EAppReturnType::Retry:
+		returnType = EMsgRetType::Retry;
+		break;
+	case EAppReturnType::Continue:
+		returnType = EMsgRetType::Continue;
+		break;
+	}
+	return returnType;
+}
+
+FString UFlib_IO::OpenWindowsDirectory(const FString& Path)
+{
+	FString oldPath;
+	IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
+	DesktopPlatform->OpenDirectoryDialog(nullptr, TEXT("打开路径"), Path, oldPath);
+	return oldPath;
+}
+
+void UFlib_IO::OpenWindowsFolder(const FString& AbsolutePath)
+{
+	FWindowsPlatformProcess::ExploreFolder(*AbsolutePath);
 }
