@@ -18,6 +18,8 @@
 #include "DesktopPlatform/Public/DesktopPlatformModule.h"
 #include "DesktopPlatform/Public/IDesktopPlatform.h"
 #include "Misc/MessageDialog.h"
+#include "JsonUtilities/Public/JsonObjectConverter.h"
+#include "Kismet/KismetArrayLibrary.h"
 
 
 
@@ -724,6 +726,42 @@ EMsgRetType UFlib_IO::OpenMessageWindow(EMsgType Type, FText Msg)
 		break;
 	}
 	return returnType;
+}
+
+void UFlib_IO::GenericUStructToJsonObjectString(const UStruct* StructDefinition, const void* Struct, FString& OutJsonString, int64 CheckFlags, int64 SkipFlags)
+{
+	FJsonObjectConverter::UStructToJsonObjectString(StructDefinition, Struct, OutJsonString, CheckFlags, SkipFlags);
+}
+
+FString UFlib_IO::HandleData_String(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N)
+{
+	FMatPropertyRetValue out = LoadMeshMaterialProperty(FilePath, Key, Index, Type, N);
+	return out.RetString;
+}
+
+
+int32 UFlib_IO::HandleData_Int(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N)
+{
+	FMatPropertyRetValue out = LoadMeshMaterialProperty(FilePath, Key, Index, Type, N);
+	return out.RetInt;
+}
+
+float UFlib_IO::HandleData_Float(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N)
+{
+	FMatPropertyRetValue out = LoadMeshMaterialProperty(FilePath, Key, Index, Type, N);
+	return out.RetFloat;
+}
+
+FVector UFlib_IO::HandleData_Vector(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N)
+{
+	FMatPropertyRetValue out = LoadMeshMaterialProperty(FilePath, Key, Index, Type, N);
+	return out.RetVector;
+}
+
+FLinearColor UFlib_IO::HandleData_Color(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N)
+{
+	FMatPropertyRetValue out = LoadMeshMaterialProperty(FilePath, Key, Index, Type, N);
+	return out.RetColor;
 }
 
 FString UFlib_IO::OpenWindowsDirectory(const FString& Path)

@@ -69,16 +69,7 @@ public:
 
 
 
-	UFUNCTION(BlueprintCallable)
-		static FString HandleData_String(const FString& FilePath, EMatPropertyKeyType Key, int32 Index,  ETextureType Type, int32 N);
-	UFUNCTION(BlueprintCallable)
-		static int32 HandleData_Int(const FString& FilePath,  EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N);
-	UFUNCTION(BlueprintCallable)
-		static float HandleData_Float(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N);
-	UFUNCTION(BlueprintCallable)
-		static FVector HandleData_Vector(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N);
-	UFUNCTION(BlueprintCallable)
-		static FLinearColor HandleData_Color(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N);
+
 	UFUNCTION()
 		FName GetFunctionName(EReturnType type);
 	UFUNCTION()

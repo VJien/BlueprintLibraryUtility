@@ -12,9 +12,15 @@ public class BlueprintLibraryUtility : ModuleRules
 
     private string ThirdPartyPath
     {
-        get { return Path.GetFullPath(Path.Combine(ModulePath, "../ThirdParty/")); }
+        get { return Path.Combine(ModulePath, "../ThirdParty/"); }
     }
 
+	private string ProjectDirectory
+    {
+		get {
+			return Path.GetFullPath(Path.Combine(ModuleDirectory, "../../../../"));
+			}
+    }
     public BlueprintLibraryUtility(ReadOnlyTargetRules Target) : base(Target)
 	{
 	    PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
@@ -57,6 +63,9 @@ public class BlueprintLibraryUtility : ModuleRules
                 "RenderCore",
                 "ProceduralMeshComponent",
 				"UMG",
+				"Json",
+				"JsonUtilities",
+				"Projects"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
@@ -73,8 +82,24 @@ public class BlueprintLibraryUtility : ModuleRules
             string PlatformString = (Target.Platform == UnrealTargetPlatform.Win64) ? "Win64" : "Win32";
             PublicAdditionalLibraries.Add(Path.Combine(ThirdPartyPath, "assimp/lib",PlatformString, "assimp-vc140-mt.lib"));
 
-            RuntimeDependencies.Add(Path.Combine(ThirdPartyPath, "assimp/bin",PlatformString, "assimp-vc140-mt.dll"));
-        }
+			
+
+			string BinariesDirectory = Path.Combine(ProjectDirectory, "Binaries", PlatformString);
+			string SourceFile = Path.Combine(ThirdPartyPath, "assimp/bin", PlatformString, "assimp-vc140-mt.dll");
+			string TargetFile = Path.Combine(BinariesDirectory, "assimp-vc140-mt.dll");
+
+
+			if (!Directory.Exists(BinariesDirectory))
+            {
+				Directory.CreateDirectory(BinariesDirectory);
+            }
+			if(File.Exists(SourceFile) && !File.Exists(TargetFile))
+            {
+				File.Copy(SourceFile, TargetFile, false);
+            }
+			
+			RuntimeDependencies.Add(Path.Combine(BinariesDirectory, "assimp-vc140-mt.dll"));
+		}
 		else if(Target.Platform == UnrealTargetPlatform.Mac)
 		{
 			string PlatformString =  "Mac";

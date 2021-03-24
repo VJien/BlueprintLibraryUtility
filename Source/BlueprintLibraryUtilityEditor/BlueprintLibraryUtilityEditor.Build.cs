@@ -53,6 +53,8 @@ public class BlueprintLibraryUtilityEditor : ModuleRules
                 "KismetCompiler",
 				"BlueprintGraph",
 				"ProceduralMeshComponent",
+				"GraphEditor",
+				"ToolMenus",
 				
 				// ... add private dependencies that you statically link with here ...	
 			}

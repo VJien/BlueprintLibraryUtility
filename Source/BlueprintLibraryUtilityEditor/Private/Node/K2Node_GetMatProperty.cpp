@@ -165,7 +165,7 @@ void UK2Node_GetMatProperty::NotifyPinConnectionListChanged(UEdGraphPin* Pin)
 
 	if (Pin == FindPin(UK2Node_GetMatProperty::PinName_Key))
 	{
-		UE_LOG(LogTemp, Log, TEXT("111111"));
+		//UE_LOG(LogTemp, Log, TEXT("111111"));
 	}
 }
 
@@ -177,7 +177,7 @@ void UK2Node_GetMatProperty::ExpandNode(FKismetCompilerContext& CompilerContext,
 	UEdGraphPin* ThenPin = GetThenPin();
 	if (ExecPin && ThenPin) {
 
-		UFunction* Function = UK2Node_GetMatProperty::StaticClass()->FindFunctionByName(FunctionName);
+		UFunction* Function = UFlib_IO::StaticClass()->FindFunctionByName(FunctionName);
 		if (Function == NULL)
 		{
 			CompilerContext.MessageLog.Error(*LOCTEXT("InvalidFunctionName", "BaseAsyncTask: Type not supported or not initialized. @@").ToString(), this);
@@ -324,35 +324,7 @@ void UK2Node_GetMatProperty::OnTextureTypePinChanged()
 	}
 }
 
-FString UK2Node_GetMatProperty::HandleData_String(const FString& FilePath,  EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N)
-{
-	FMatPropertyRetValue out = UFlib_IO::LoadMeshMaterialProperty(FilePath, Key, Index, Type, N);
-	return out.RetString;
-}
 
-int32 UK2Node_GetMatProperty::HandleData_Int(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N)
-{
-	FMatPropertyRetValue out = UFlib_IO::LoadMeshMaterialProperty(FilePath,  Key, Index, Type, N);
-	return out.RetInt;
-}
-
-float UK2Node_GetMatProperty::HandleData_Float(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N)
-{
-	FMatPropertyRetValue out = UFlib_IO::LoadMeshMaterialProperty(FilePath,  Key, Index, Type, N);
-	return out.RetFloat;
-}
-
-FVector UK2Node_GetMatProperty::HandleData_Vector(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N)
-{
-	FMatPropertyRetValue out = UFlib_IO::LoadMeshMaterialProperty(FilePath,  Key, Index, Type, N);
-	return out.RetVector;
-}
-
-FLinearColor UK2Node_GetMatProperty::HandleData_Color(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N)
-{
-	FMatPropertyRetValue out = UFlib_IO::LoadMeshMaterialProperty(FilePath,  Key, Index, Type, N);
-	return out.RetColor;
-}
 
 void UK2Node_GetMatProperty::RefreshReturnPin(EReturnType newType)
 {

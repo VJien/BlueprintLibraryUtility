@@ -51,5 +51,14 @@ UCLASS()
 class BLUEPRINTLIBRARYUTILITY_API UFlib_Utilities : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
+
+
+
+
+
+	UFUNCTION(BlueprintCallable, meta = (CallableWithoutWorldContext = true, WorldContext = "context"))
+		static void PrintArray(UObject* context, const TArray<FString>& InStrings, bool bScreen = true, bool bLog = true, FLinearColor Color = FLinearColor::Green, float Duration = 2.0f);
+
+
 	
 };

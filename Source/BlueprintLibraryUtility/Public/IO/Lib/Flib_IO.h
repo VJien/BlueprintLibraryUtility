@@ -4,12 +4,17 @@
 #include "ProceduralMeshComponent.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "IO/Types/IOTypes.h"
+
 #include "Flib_IO.generated.h"
 
 class UTextureRenderTarget2D;
 
 
+USTRUCT(BlueprintInternalUseOnly)
+struct FDummyStruct {
+	GENERATED_USTRUCT_BODY()
 
+};
 
 
 /**
@@ -89,5 +94,58 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "BlueprintLibraryUtility|IO", meta = (Keywords = "msg"))
 		static EMsgRetType OpenMessageWindow(EMsgType Type, FText Msg);
 #pragma endregion message
+
+
+	UFUNCTION(BlueprintPure, CustomThunk, meta = (CustomStructureParam = "StructReference", DisplayName = "Struct to JSON String"), Category = "File|Json")
+		static void UStructToJsonObjectString(const int32& StructReference, FString& JSONString);
+	static void GenericUStructToJsonObjectString(const UStruct* StructDefinition, const void* Struct, FString& OutJsonString, int64 CheckFlags, 
+	int64 SkipFlags);
+
+	DECLARE_FUNCTION(execUStructToJsonObjectString)
+	{
+		//Stack.Step(Stack.Object, NULL);
+		Stack.StepCompiledIn<FStructProperty>(NULL);
+		FStructProperty* StructProperty = CastField<FStructProperty>(Stack.MostRecentProperty);
+		void* StructPtr = Stack.MostRecentPropertyAddress;
+
+		//Get JsonString reference
+		P_GET_PROPERTY_REF(FStrProperty, JSONString);
+
+		P_FINISH;
+
+		P_NATIVE_BEGIN;
+
+		GenericUStructToJsonObjectString(StructProperty->Struct,StructPtr,JSONString,0,0);
+
+		P_NATIVE_END;
+	}
+
+
+
+
+	// only handle LoadMaterialsProperty
+	UFUNCTION(BlueprintCallable)
+		static FString HandleData_String(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N);
+	UFUNCTION(BlueprintCallable)
+		static int32 HandleData_Int(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N);
+	UFUNCTION(BlueprintCallable)
+		static float HandleData_Float(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N);
+	UFUNCTION(BlueprintCallable)
+		static FVector HandleData_Vector(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N);
+	UFUNCTION(BlueprintCallable)
+		static FLinearColor HandleData_Color(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 };
