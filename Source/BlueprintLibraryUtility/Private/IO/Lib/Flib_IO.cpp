@@ -430,7 +430,7 @@ FMatPropertyRetValue UFlib_IO::LoadMeshMaterialProperty(const FString& FilePath,
 	return out;
 }
 //Discern Texture Type
-static TSharedPtr<IImageWrapper> GetImageWrapperByExtention(const FString InImagePath)
+static TSharedPtr<IImageWrapper> GetImageWrapperByExtention(const FString& InImagePath)
 {
 	IImageWrapperModule& ImageWrapperModule = FModuleManager::GetModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
 
@@ -462,7 +462,7 @@ static TSharedPtr<IImageWrapper> GetImageWrapperByExtention(const FString InImag
 	}
 	return nullptr;
 }
-UTexture2D* UFlib_IO::LoadTexture2DFromFile(const FString& FilePath, bool& IsValid, int32& Width, int32& Height)
+UTexture2D* UFlib_IO::LoadTexture2DFromFile(const FString& FilePath, uint8 type, bool& IsValid, int32& Width, int32& Height)
 {
 
 	IsValid = false;
@@ -477,7 +477,7 @@ UTexture2D* UFlib_IO::LoadTexture2DFromFile(const FString& FilePath, bool& IsVal
 	if (ImageWrapper.IsValid() && ImageWrapper->SetCompressed(RawFileData.GetData(), RawFileData.Num()))
 	{
 		TArray<uint8> UncompressedBGRA;
-		if (ImageWrapper->GetRaw(ERGBFormat::BGRA, 8, UncompressedBGRA))
+		if (ImageWrapper->GetRaw(ERGBFormat(FMath::Clamp(int32(type), -1, 2)), 8, UncompressedBGRA))
 		{
 
 			LoadedT2D = UTexture2D::CreateTransient(ImageWrapper->GetWidth(), ImageWrapper->GetHeight(), PF_B8G8R8A8);
@@ -497,6 +497,94 @@ UTexture2D* UFlib_IO::LoadTexture2DFromFile(const FString& FilePath, bool& IsVal
 
 	IsValid = true;
 	return LoadedT2D;
+}
+
+
+
+bool UFlib_IO::LoadTextureAsByteFromFile(const FString& FilePath, uint8 type, TArray<uint8>& OutArray)
+{
+	if (FilePath.IsEmpty())
+	{
+		return false;
+	}
+	TSharedPtr<IImageWrapper> ImageWrapper = GetImageWrapperByExtention(FilePath);
+	TArray<uint8> RawFileData;
+	if (FFileHelper::LoadFileToArray(RawFileData, *FilePath, 0))
+	{
+		if (ImageWrapper.IsValid() && ImageWrapper->SetCompressed(RawFileData.GetData(), RawFileData.Num()))
+		{
+			TArray<uint8> UncompressedBGRA;
+			if (ImageWrapper->GetRaw(ERGBFormat(FMath::Clamp(int32(type),-1,2)), 8, UncompressedBGRA))
+			{
+				OutArray = UncompressedBGRA;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+TArray<FColor> UFlib_IO::ByteToColor(const TArray<uint8>& origin)
+{
+	TArray<FColor> uncompressedFColor;
+	uint8 auxOrigin;
+	FColor auxDst;
+
+	for (int i = 0; i < origin.Num(); i++) {
+		auxOrigin = origin[i];
+		auxDst.R = auxOrigin;
+		i++;
+		auxOrigin = origin[i];
+		auxDst.G = auxOrigin;
+		i++;
+		auxOrigin = origin[i];
+		auxDst.B = auxOrigin;
+		i++;
+		auxOrigin = origin[i];
+		auxDst.A = auxOrigin;
+		uncompressedFColor.Add(auxDst);
+	}
+
+	return  uncompressedFColor;
+}
+
+UTexture2D* UFlib_IO::MakeTexture2dFromColor(const int32 SrcWidth, const int32 SrcHeight, const TArray<FColor>& SrcData, const bool UseAlpha)
+{
+	// 创建Texture2D纹理  
+	UTexture2D* MyScreenshot = UTexture2D::CreateTransient(SrcWidth, SrcHeight, PF_B8G8R8A8);
+
+	// 锁住他的数据，以便修改  
+	uint8* MipData = static_cast<uint8*>(MyScreenshot->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE));
+
+	// 创建纹理数据  
+	uint8* DestPtr = NULL;
+	const FColor* SrcPtr = NULL;
+	for (int32 y = 0; y < SrcHeight; y++)
+	{
+		DestPtr = &MipData[(SrcHeight - 1 - y) * SrcWidth * sizeof(FColor)];
+		SrcPtr = const_cast<FColor*>(&SrcData[(SrcHeight - 1 - y) * SrcWidth]);
+		for (int32 x = 0; x < SrcWidth; x++)
+		{
+			*DestPtr++ = SrcPtr->B;
+			*DestPtr++ = SrcPtr->G;
+			*DestPtr++ = SrcPtr->R;
+			if (UseAlpha)
+			{
+				*DestPtr++ = SrcPtr->A;
+			}
+			else
+			{
+				*DestPtr++ = 0xFF;
+			}
+			SrcPtr++;
+		}
+	}
+
+	// 解锁纹理  
+	MyScreenshot->PlatformData->Mips[0].BulkData.Unlock();
+	MyScreenshot->UpdateResource();
+
+	return MyScreenshot;
 }
 
 bool UFlib_IO::ExportTextureRenderTarget2D2PNG(UTextureRenderTarget2D* TextureRenderTarget, const FString& FilePath)
@@ -566,7 +654,7 @@ class USoundWave* UFlib_IO::LoadWaveDataFromFile(const FString& FilePath)
 	return sw;
 }
 
-bool UFlib_IO::ReadFile(const FString FilePath, FString& ReturnString)
+bool UFlib_IO::ReadFile(const FString& FilePath, FString& ReturnString)
 {
 	FString Cache = "";
 	bool Sucess = false;
@@ -575,7 +663,51 @@ bool UFlib_IO::ReadFile(const FString FilePath, FString& ReturnString)
 	return Sucess;
 }
 
-bool UFlib_IO::WriteFile(const FString FilePath, const FString& FileString)
+
+
+bool UFlib_IO::RenameFile(const FString& FileName, const FString& NewName)
+{
+	if (DoesFileExist(FileName) && !NewName.IsEmpty())
+	{
+		rename(TCHAR_TO_UTF8(*FileName),TCHAR_TO_UTF8(*NewName));
+		return true;
+	}
+	return false;
+	
+}
+
+bool UFlib_IO::DoesFileExist(const FString& File)
+{
+	if (File.IsEmpty())
+	{
+		return false;
+	}
+	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+
+	return PlatformFile.FileExists(*File);
+}
+
+bool UFlib_IO::CreateDirectory(const FString& Directory)
+{
+	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+	
+	return PlatformFile.CreateDirectory(*Directory);
+
+	
+}
+
+bool UFlib_IO::DoesDirectoryExist(const FString& Directory)
+{
+	if (Directory.IsEmpty())
+	{
+		return false;
+	}
+	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+
+	return PlatformFile.DirectoryExists(*Directory);
+}
+
+bool UFlib_IO::WriteFile(const FString& FilePath, const FString& FileString)
 {
 	if (FilePath.IsEmpty())
 	{
@@ -586,15 +718,14 @@ bool UFlib_IO::WriteFile(const FString FilePath, const FString& FileString)
 	return Sucess;
 }
 
-bool UFlib_IO::DeleteFile(const FString FilePath)
+bool UFlib_IO::DeleteFile(const FString& FilePath)
 {
 	if (FilePath.IsEmpty())
 	{
 		return false;
 	}
 	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-
-
+	
 
 	if (PlatformFile.DeleteFile(*FilePath))
 	{
@@ -610,7 +741,17 @@ bool UFlib_IO::DeleteFile(const FString FilePath)
 	}
 }
 
-bool UFlib_IO::DeleteFiles(const FString FilePath)
+bool UFlib_IO::MoveFile(const FString& Source, const FString& Dest)
+{
+	if (Source.IsEmpty() || Dest.IsEmpty())
+	{
+		return false;
+	}
+	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+	return PlatformFile.MoveFile(*Dest,*Source);
+}
+
+bool UFlib_IO::DeleteFiles(const FString& FilePath)
 {
 	if (FilePath.IsEmpty())
 	{
@@ -635,7 +776,7 @@ bool UFlib_IO::DeleteFiles(const FString FilePath)
 	}
 }
 
-bool UFlib_IO::CopyFile(const FString FilePath, const FString ToPath)
+bool UFlib_IO::CopyFile(const FString& FilePath, const FString& ToPath)
 {
 	if (FilePath.IsEmpty() || ToPath.IsEmpty())
 	{
@@ -656,7 +797,7 @@ TArray<FString> UFlib_IO::OpenWindowsFilesDialog(const FString& Path, const FStr
 	return OpenFileNames;
 }
 
-void UFlib_IO::OpenExe(const FString Path, const FString Args)
+void UFlib_IO::OpenExe(const FString& Path, const FString& Args)
 {
 
 	FWindowsPlatformProcess::CreateProc(*Path, *Args, true, false, false, nullptr, 0, nullptr, nullptr);

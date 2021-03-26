@@ -162,11 +162,42 @@ UK2Node_GetMatProperty::UK2Node_GetMatProperty(const FObjectInitializer& ObjectI
 void UK2Node_GetMatProperty::NotifyPinConnectionListChanged(UEdGraphPin* Pin)
 {
 	Super::NotifyPinConnectionListChanged(Pin);
+	PinTypeChanged(Pin);
+}
 
-	if (Pin == FindPin(UK2Node_GetMatProperty::PinName_Key))
+
+void UK2Node_GetMatProperty::PinTypeChanged(UEdGraphPin* Pin)
+{
+	
+	/*if (Pin->PinName == TEXT("TEST"))
 	{
-		//UE_LOG(LogTemp, Log, TEXT("111111"));
-	}
+		UEdGraphPin* testPin = FindPin(TEXT("TEST"));
+		if (Pin->LinkedTo.Num()>0)
+		{
+			UEdGraphPin* InstigatorPin = Pin->LinkedTo[0];
+			if (testPin->PinType != InstigatorPin->PinType)
+			{
+				testPin->PinType = InstigatorPin->PinType;
+			}
+		}
+		else
+		{
+			testPin->PinType.PinCategory = UEdGraphSchema_K2::PC_Wildcard;
+			testPin->PinType.PinSubCategory = NAME_None;
+			testPin->PinType.PinSubCategoryObject = nullptr;
+		}
+
+		GetGraph()->NotifyGraphChanged();
+
+		UBlueprint* Blueprint = GetBlueprint();
+		if (!Blueprint->bBeingCompiled)
+		{
+			FBlueprintEditorUtils::MarkBlueprintAsModified(Blueprint);
+			Blueprint->BroadcastChanged();
+		}
+	}*/
+
+	Super::PinTypeChanged(Pin);
 }
 
 void UK2Node_GetMatProperty::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
@@ -228,6 +259,10 @@ void UK2Node_GetMatProperty::AllocateDefaultPins()
 	UEdGraphPin* typePin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Byte, TypeEnum, UK2Node_GetMatProperty::PinName_T);
 	UEdGraphPin* numberPin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Int, UK2Node_GetMatProperty::PinName_N);
 	
+
+	//UEdGraphPin* testPin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Wildcard, TEXT("TEST"));
+
+
 	if (CurrentKeyName.IsEmpty())
 	{
 		keyPin->DefaultValue = KeyEnum->GetNameStringByValue(static_cast<int>(EMatPropertyKeyType::NAME));
@@ -254,7 +289,7 @@ void UK2Node_GetMatProperty::AllocateDefaultPins()
 		EReturnType type =  GetReturnTypeByKeyType(keyType);
 		RefreshExtraPin(keyType);
 		RefreshReturnPin(type);
-		
+	
 		
 	}
 

@@ -1,7 +1,7 @@
 // Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
 
 #pragma once
-#include "Engine.h"
+#include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
 class FBlueprintLibraryUtilityModule : public IModuleInterface
@@ -12,3 +12,4 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 };
+

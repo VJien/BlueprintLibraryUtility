@@ -27,7 +27,8 @@ public class BlueprintLibraryUtility : ModuleRules
 
         PublicIncludePaths.AddRange(
 			new string[] {
-                Path.Combine(ThirdPartyPath, "assimp/include")
+                Path.Combine(ThirdPartyPath, "assimp/include"),
+
 				// ... add public include paths required here ...
 			}
 		);

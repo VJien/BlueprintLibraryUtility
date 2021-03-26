@@ -23,10 +23,9 @@ class  UK2Node_GetMatProperty : public UK2Node
 	GENERATED_UCLASS_BODY()
 
 public:
-	/*virtual bool IsNodePure() const override { return true; }
-	virtual bool IsConnectionDisallowed(const UEdGraphPin* MyPin, const UEdGraphPin* OtherPin, FString& OutReason) const override{return true;};*/
-	virtual void NotifyPinConnectionListChanged(UEdGraphPin* Pin)override;
 
+	virtual void NotifyPinConnectionListChanged(UEdGraphPin* Pin)override;
+	virtual void PinTypeChanged(UEdGraphPin* Pin) override;
 	virtual FText GetTooltipText()const override
 	{
 		return FText::FromString("Load Mat Property from File");
