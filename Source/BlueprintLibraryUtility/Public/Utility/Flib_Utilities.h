@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Kismet/KismetStringLibrary.h"
 #include "Flib_Utilities.generated.h"
 
 
@@ -56,10 +57,23 @@ class BLUEPRINTLIBRARYUTILITY_API UFlib_Utilities : public UBlueprintFunctionLib
 
 
 
-	UFUNCTION(BlueprintCallable, meta = (CallableWithoutWorldContext = true, WorldContext = "context"))
+	UFUNCTION(BlueprintCallable, meta = (CallableWithoutWorldContext = true, WorldContext = "context"), Category = "BlueprintLibraryUtilites")
 		static void PrintArray(UObject* context, const TArray<FString>& InStrings, bool bScreen = true, bool bLog = true, FLinearColor Color = FLinearColor::Green, float Duration = 2.0f);
 
 
-	UFUNCTION(BlueprintCallable, meta = (CallableWithoutWorldContext = true, WorldContext = "context"))
-		static void Test();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "BlueprintLibraryUtilites")
+		static UObject* GetObjBySoftPath(const FSoftObjectPath& softPath);
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "BlueprintLibraryUtilites")
+		static UObject* GetObjRefBySoftPtr(const TSoftObjectPtr<UObject>& softPathPtr);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "BlueprintLibraryUtilites")
+		static UClass* GetClassBySoftPath(const FSoftClassPath& softPath);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "BlueprintLibraryUtilites")
+		static UClass* GetClassByClassSoftPtr(const TSoftClassPtr<UObject>& softPathPtr);
+
+
+
+		//virtual bool ProcessConsoleExec(const TCHAR* Cmd, FOutputDevice& Ar, UObject* Executor)override;
+
 };

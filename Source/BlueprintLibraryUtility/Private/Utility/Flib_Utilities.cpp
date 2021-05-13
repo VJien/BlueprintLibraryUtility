@@ -15,7 +15,27 @@ void UFlib_Utilities::PrintArray(UObject* context, const TArray<FString>& InStri
 	UKismetSystemLibrary::PrintString(context, OutString, bScreen, bLog, Color, Duration);
 }
 
-void UFlib_Utilities::Test()
+UObject* UFlib_Utilities::GetObjBySoftPath(const FSoftObjectPath& softPath)
 {
-	
+	UObject* obj = LoadObject<UObject>(NULL, *softPath.ToString());
+	return obj;
 }
+
+UObject* UFlib_Utilities::GetObjRefBySoftPtr(const TSoftObjectPtr<UObject>& softPathPtr)
+{
+	TSoftObjectPtr<UObject> p = TSoftObjectPtr<UObject>(softPathPtr);
+	return p.Get();
+}
+
+UClass* UFlib_Utilities::GetClassBySoftPath(const FSoftClassPath& softPath)
+{
+	UClass* c = LoadClass<UObject>(NULL, *softPath.ToString());
+	return c;
+}
+
+UClass* UFlib_Utilities::GetClassByClassSoftPtr(const TSoftClassPtr<UObject>& softPathPtr)
+{
+	TSoftClassPtr<UObject> p = TSoftClassPtr<UObject>(softPathPtr);
+	return  p.Get();
+}
+
