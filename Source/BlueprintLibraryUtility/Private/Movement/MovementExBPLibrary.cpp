@@ -156,6 +156,15 @@ UMoveAndRotateProxy* UFlibMovementEx::V_ActorMoveAndRotateBySpeed(AActor* Target
 	return nullptr;
 }
 
+bool UFlibMovementEx::V_ActorMoveAndRotateBySpeedDelegate(AActor* Target, const FActorMoveAndRotateDlg& EndEvent, FVector Destination, bool bUseOffset, float MoveSpeed, float roll /*= 0.0f*/, float pitch /*= 0.0f*/, float yaw /*= 0.0f*/, float RotateSpeed /*= 90.f*/, bool bRotatorIsAdditive /*= false*/)
+{
+	if (!Target) { return false; };
+	UMoveAndRotateProxy* p = NewObject<UMoveAndRotateProxy>(Target);
+	 return p->ProxyMoveAndRotationDelegate(Target, EndEvent, Destination, bUseOffset, MoveSpeed, roll, pitch, yaw, RotateSpeed, bRotatorIsAdditive);
+
+
+}
+
 UMoveAndRotateProxy* UFlibMovementEx::V_ActorMoveAndRotateByTime(AActor* Target, FVector Destination, bool bUseOffset, float Duration,  float roll /*= 0.0f*/, float pitch /*= 0.0f*/, float yaw /*= 0.0f*/, bool bRotatorIsAdditive /*= false*/)
 {
 	if (!Target) { return nullptr; };
@@ -178,32 +187,42 @@ UMoveAndRotateProxy* UFlibMovementEx::V_ActorMoveAndRotateByTime(AActor* Target,
 
 	float rotMax = deltaRot.GetAbsMax();
 	float tranMax = deltaTranstion.GetAbsMax();
-	//float max;
-	//switch (DurationBaseOn)
-	//{
-	//case Auto:
-	//{
-	//	max	= rotMax > tranMax ? rotMax : tranMax;
-	//	break;
-	//}
-	//case BaseOnTranslation:
-	//{
-	//	max = tranMax;
-	//	break;
-	//}
-	//case  BaseOnRotation:
-	//{
-	//	max = rotMax;
-	//	break;
-	//}
-	//}
-	 
+
 	UMoveAndRotateProxy* p = NewObject<UMoveAndRotateProxy>(Target);
 	if (p->ProxyMoveAndRotation(Target, Destination, bUseOffset, tranMax / Duration, roll, pitch, yaw, rotMax / Duration, bRotatorIsAdditive))
 	{
 		return p;
 	}
 	return nullptr;
+
+}
+
+bool UFlibMovementEx::V_ActorMoveAndRotateByTimeDelegate(AActor* Target, const FActorMoveAndRotateDlg& EndEvent, FVector Destination, bool bUseOffset, float Duration, float roll /*= 0.0f*/, float pitch /*= 0.0f*/, float yaw /*= 0.0f*/, bool bRotatorIsAdditive /*= false*/)
+{
+	if (!Target) { return false; };
+	FRotator rot = Target->GetActorRotation();
+	FVector deltaRot, deltaTranstion;
+	deltaTranstion = bUseOffset ? Destination : Destination - Target->GetActorLocation();
+
+	if (bRotatorIsAdditive)
+	{
+		deltaRot.X = roll;
+		deltaRot.Y = pitch;
+		deltaRot.Z = yaw;
+	}
+	else
+	{
+		deltaRot.X = rot.Roll - roll;
+		deltaRot.Y = rot.Pitch - pitch;
+		deltaRot.Z = rot.Yaw - yaw;
+	}
+
+	float rotMax = deltaRot.GetAbsMax();
+	float tranMax = deltaTranstion.GetAbsMax();
+
+	UMoveAndRotateProxy* p = NewObject<UMoveAndRotateProxy>(Target);
+	return p->ProxyMoveAndRotationDelegate(Target, EndEvent, Destination, bUseOffset, tranMax / Duration, roll, pitch, yaw, rotMax / Duration, bRotatorIsAdditive);
+	
 
 }
 

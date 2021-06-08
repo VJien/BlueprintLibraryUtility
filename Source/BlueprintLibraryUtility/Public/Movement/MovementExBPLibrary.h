@@ -127,9 +127,15 @@ class BLUEPRINTLIBRARYUTILITY_API UFlibMovementEx : public UBlueprintFunctionLib
 		static UMoveAndRotateProxy* V_ActorMoveAndRotateBySpeed(AActor* Target, FVector Destination, bool bUseOffset, float MoveSpeed, 
 			float roll = 0.0f, float pitch = 0.0f, float yaw = 0.0f, float RotateSpeed = 90.f, bool bRotatorIsAdditive = false);
 
-
+	UFUNCTION(BlueprintCallable, Category = "MovementEx", meta = (AdvancedDisplay = 5))
+		static bool V_ActorMoveAndRotateBySpeedDelegate(AActor* Target, const FActorMoveAndRotateDlg& EndEvent,  FVector Destination, bool bUseOffset, float MoveSpeed,
+			float roll = 0.0f, float pitch = 0.0f, float yaw = 0.0f, float RotateSpeed = 90.f, bool bRotatorIsAdditive = false);
 
 	UFUNCTION(BlueprintCallable, Category = "MovementEx", meta = (AdvancedDisplay = 5))
 		static UMoveAndRotateProxy* V_ActorMoveAndRotateByTime(AActor* Target, FVector Destination, bool bUseOffset, float Duration, 
+			float roll = 0.0f, float pitch = 0.0f, float yaw = 0.0f, bool bRotatorIsAdditive = false);
+
+	UFUNCTION(BlueprintCallable, Category = "MovementEx", meta = (AdvancedDisplay = 5))
+		static bool V_ActorMoveAndRotateByTimeDelegate(AActor* Target, const FActorMoveAndRotateDlg& EndEvent, FVector Destination, bool bUseOffset, float Duration,
 			float roll = 0.0f, float pitch = 0.0f, float yaw = 0.0f, bool bRotatorIsAdditive = false);
 };
