@@ -66,7 +66,9 @@ public class BlueprintLibraryUtility : ModuleRules
 				"UMG",
 				"Json",
 				"JsonUtilities",
-				"Projects"
+				"Projects",
+                "AIModule",
+                "NavigationSystem"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

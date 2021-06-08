@@ -55,7 +55,12 @@ public class BlueprintLibraryUtilityEditor : ModuleRules
 				"ProceduralMeshComponent",
 				"GraphEditor",
 				"ToolMenus",
-				
+                "AIModule",
+                "NavigationSystem",
+				"AIGraph",
+
+
+
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
