@@ -81,6 +81,7 @@ bool UMoveAndRotateProxy::ProxyMoveAndRotationDelegate(AActor* Target, const FAc
 		currPitch = m_Actor->GetActorRotation().Pitch;
 		currRoll = m_Actor->GetActorRotation().Roll;
 		currYaw = m_Actor->GetActorRotation().Yaw;
+		currLocation = m_Actor->GetActorLocation();
 
 		fMoveSpeed = MoveSpeed;
 		fRotSpeed = RotateSpeed;
