@@ -17,12 +17,12 @@
 		{
 			"Name": "BlueprintLibraryUtility",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "PreDefault"
 		},
 		{
 			"Name": "BlueprintLibraryUtilityEditor",
 			"Type": "Developer",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "PreDefault"
 		}
 	],
 	"Plugins": [
