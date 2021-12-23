@@ -31,7 +31,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "BlueprintLibraryUtility|IO")
 		static FLoadedMeshData LoadMeshData(FString filepath, FLoadConfig Config);
 
-	static FMatPropertyRetValue LoadMeshMaterialProperty(const FString& FilePath, EMatPropertyKeyType key, unsigned int matIdx, ETextureType type, int32 number);
+	static FMatPropertyRetValue LoadMeshMaterialProperty(const FString& FilePath, EMatPropertyKeyType key, unsigned int matIdx, EAssimpTextureType type, int32 number);
 #pragma endregion mesh
 
 
@@ -161,15 +161,15 @@ public:
 
 	// only handle LoadMaterialsProperty
 	UFUNCTION(BlueprintCallable)
-		static FString HandleData_String(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N);
+		static FString HandleData_String(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, EAssimpTextureType Type, int32 N);
 	UFUNCTION(BlueprintCallable)
-		static int32 HandleData_Int(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N);
+		static int32 HandleData_Int(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, EAssimpTextureType Type, int32 N);
 	UFUNCTION(BlueprintCallable)
-		static float HandleData_Float(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N);
+		static float HandleData_Float(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, EAssimpTextureType Type, int32 N);
 	UFUNCTION(BlueprintCallable)
-		static FVector HandleData_Vector(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N);
+		static FVector HandleData_Vector(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, EAssimpTextureType Type, int32 N);
 	UFUNCTION(BlueprintCallable)
-		static FLinearColor HandleData_Color(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N);
+		static FLinearColor HandleData_Color(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, EAssimpTextureType Type, int32 N);
 
 
 

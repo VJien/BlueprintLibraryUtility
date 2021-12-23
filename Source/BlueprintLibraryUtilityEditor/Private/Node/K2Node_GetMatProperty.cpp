@@ -252,7 +252,7 @@ void UK2Node_GetMatProperty::AllocateDefaultPins()
 	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Execute);
 	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Then);
 	UEnum* const KeyEnum = FindObjectChecked<UEnum>(ANY_PACKAGE, TEXT("EMatPropertyKeyType"), true);
-	UEnum* const TypeEnum = FindObjectChecked<UEnum>(ANY_PACKAGE, TEXT("ETextureType"), true);
+	UEnum* const TypeEnum = FindObjectChecked<UEnum>(ANY_PACKAGE, TEXT("EAssimpTextureType"), true);
 	UEdGraphPin* pathPin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_String, UK2Node_GetMatProperty::PinName_File);
 	UEdGraphPin*  keyPin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Byte, KeyEnum, UK2Node_GetMatProperty::PinName_Key);
 	UEdGraphPin* indexPin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Int, UK2Node_GetMatProperty::PinName_Idx);
@@ -345,14 +345,14 @@ void UK2Node_GetMatProperty::OnTextureTypePinChanged()
 	UEdGraphPin* tPin = FindPinChecked(UK2Node_GetMatProperty::PinName_T);
 	if (tPin && tPin->Direction == EGPD_Input)
 	{
-		UEnum* const MethodEnum = FindObjectChecked<UEnum>(ANY_PACKAGE, TEXT("ETextureType"), true);
+		UEnum* const MethodEnum = FindObjectChecked<UEnum>(ANY_PACKAGE, TEXT("EAssimpTextureType"), true);
 		FString keyValueString = tPin->GetDefaultAsString();
 		if (keyValueString.Equals(TEXT("NONE"))) return;
 		//获取完整名称
 		FString keyValueHasDoubleColon = FString::Printf(TEXT("%s::%s"), *MethodEnum->GetName(), *keyValueString);
 		int64 keyValue = MethodEnum->GetValueByNameString(keyValueHasDoubleColon);
 		if (CurrentTextureTypeName.Equals(keyValueString.ToLower())) return;
-		ETextureType keyType = BLU::StringToEnum<ETextureType>(TEXT("ETextureType"), keyValueString);
+		EAssimpTextureType keyType = BLU::StringToEnum<EAssimpTextureType>(TEXT("EAssimpTextureType"), keyValueString);
 		CurrentKeyName = keyValueString.ToLower();
 		FBlueprintEditorUtils::MarkBlueprintAsModified(GetBlueprint());
 

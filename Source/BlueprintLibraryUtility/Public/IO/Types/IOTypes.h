@@ -119,7 +119,7 @@ enum class EMatPropertyKeyType : uint8
 
 };
 UENUM(BlueprintType)
-enum class ETextureType : uint8
+enum class EAssimpTextureType : uint8
 	{
 		NONE = 0x0,
 		/** The texture is combined with the result of the diffuse

@@ -159,7 +159,7 @@ FLoadedMeshData UFlib_IO::LoadMeshData(FString filepath, FLoadConfig Config)
 	return out;
 }
 
-FMatPropertyRetValue UFlib_IO::LoadMeshMaterialProperty(const FString& FilePath, EMatPropertyKeyType key, unsigned int matIdx, ETextureType type, int32 number)
+FMatPropertyRetValue UFlib_IO::LoadMeshMaterialProperty(const FString& FilePath, EMatPropertyKeyType key, unsigned int matIdx, EAssimpTextureType type, int32 number)
 {
 	if (FilePath.IsEmpty())
 	{
@@ -874,32 +874,32 @@ void UFlib_IO::GenericUStructToJsonObjectString(const UStruct* StructDefinition,
 	FJsonObjectConverter::UStructToJsonObjectString(StructDefinition, Struct, OutJsonString, CheckFlags, SkipFlags);
 }
 
-FString UFlib_IO::HandleData_String(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N)
+FString UFlib_IO::HandleData_String(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, EAssimpTextureType Type, int32 N)
 {
 	FMatPropertyRetValue out = LoadMeshMaterialProperty(FilePath, Key, Index, Type, N);
 	return out.RetString;
 }
 
 
-int32 UFlib_IO::HandleData_Int(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N)
+int32 UFlib_IO::HandleData_Int(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, EAssimpTextureType Type, int32 N)
 {
 	FMatPropertyRetValue out = LoadMeshMaterialProperty(FilePath, Key, Index, Type, N);
 	return out.RetInt;
 }
 
-float UFlib_IO::HandleData_Float(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N)
+float UFlib_IO::HandleData_Float(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, EAssimpTextureType Type, int32 N)
 {
 	FMatPropertyRetValue out = LoadMeshMaterialProperty(FilePath, Key, Index, Type, N);
 	return out.RetFloat;
 }
 
-FVector UFlib_IO::HandleData_Vector(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N)
+FVector UFlib_IO::HandleData_Vector(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, EAssimpTextureType Type, int32 N)
 {
 	FMatPropertyRetValue out = LoadMeshMaterialProperty(FilePath, Key, Index, Type, N);
 	return out.RetVector;
 }
 
-FLinearColor UFlib_IO::HandleData_Color(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, ETextureType Type, int32 N)
+FLinearColor UFlib_IO::HandleData_Color(const FString& FilePath, EMatPropertyKeyType Key, int32 Index, EAssimpTextureType Type, int32 N)
 {
 	FMatPropertyRetValue out = LoadMeshMaterialProperty(FilePath, Key, Index, Type, N);
 	return out.RetColor;
